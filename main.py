@@ -91,28 +91,43 @@ def jogar(aposta):
     if cartas_dealer[0] == 'A' and (valor_aposta + (valor_aposta/2)) < saldo():
         print('O Dealer está com um ÀS!')
         seguro = input('Deseja fazer seguro? (Y/N): ')
+
         while seguro not in ['Y', 'N']:
               try:
                 seguro = input('Por favor, escolha uma opção disponível (Y/N): ')
               except ValueError:
                 seguro = input('Por favor, escolha uma opção válida (Y/N): ')
 
-        #if seguro == 'Y':
-         #   if sum(valor_cartas_dealer) == 21:
+        if seguro == 'Y' and sum(valor_cartas_dealer) == 21:
+            print('Dealer possui 21 -> Seguro cobriu a aposta.')
+            print('=== ♠ Rodada encerrada ♠ ===')
+            apostar_novamente = input('♠ Apostar novamente? (Y/N): ')
+            while apostar_novamente not in ['Y', 'N']:
+                try:
+                    apostar_novamente = input('Por favor, escolha uma opção válida (Y/N): ')
+                except ValueError:
+                    apostar_novamente = input('Por favor, escolha uma opção válida (Y/N): ')
+            if apostar_novamente == 'Y':
+                apostar()
+            elif apostar_novamente == 'N':
+                menu()
+                
+        elif seguro == 'Y' and sum(valor_cartas_dealer) != 21:
+             with open('saldo.txt', 'w') as arq:
+                  arq.write(float(saldo() - (valor_aposta/2)))
+
     elif cartas_dealer[0] == 'A' and (valor_aposta + (valor_aposta/2)) > saldo():
         print('O Dealer está com um ÀS!')
         print('Você não possui saldo suficiente para fazer seguro.')
 
-                                      
-             
-        print(f'Cartas do Dealer: {cartas_dealer[0]} & {cartas_dealer[1]}')
+    # print(f'Cartas do Dealer: {cartas_dealer[0]} & {cartas_dealer[1]}')
         
 def apostar():
     global valor_aposta
 
     saldo()
 
-    if saldo == 0:
+    if saldo() == 0:
         # limpar_tela()
         print('Seu saldo está zerado. Para apostar é necessário possuir saldo.')
         print('Estamos te levando à tela de depósito.')
@@ -123,16 +138,45 @@ def apostar():
     while True:
         try:
             valor_aposta = float(input('♠ Aposta: R$'))
-            if valor_aposta > saldo:
-                 print('Você não possui saldo suficiente para esta aposta.')
-            elif valor_aposta <= 0:
-                 print('Por favor, insira um valor maior que zero.')
             break
         except ValueError:
-             print('Por favor, insira um valor válido.')
+            print('Por favor, insira um número válido.')
+
+    while valor_aposta <= 0:
+        try:
+            print('= Por favor, aposte um valor maior que zero.')
+            valor_aposta = float(input('♠ Aposta: R$'))
+            break
+        except ValueError:
+            print('= Por favor, insira um número válido maior que zero.')
+            
+    while valor_aposta > saldo():
+        print('= Você não possui saldo suficiente para esta aposta.')
+        print(f'= Saldo atual: R${saldo()}')
+        print('1. Mudar valor da aposta')
+        print('2. Depositar saldo')
+
+        opcao = int(input('♠ Opção: '))
+        while opcao not in [1, 2]:
+            try:
+                print('= Por favor, escolha uma opção válida (1/2): ')
+                opcao = int(input('♠ Opção: '))
+            except ValueError:
+                print('= Por favor, escolha uma opção válida (1/2): ')
+                    
+        if opcao == 1:
+            valor_aposta = float(input('♠ Novo valor da aposta: R$'))
+            while valor_aposta > saldo():
+                print('= Você não possui saldo suficiente para esta aposta.')
+                print(f'= Saldo atual: R${saldo()}')
+                valor_aposta = float(input(' ♠ Novo valor da aposta: R$'))
+        else:
+            print('= Estamos te transferindo para a página de depósito, aguarde.')
+            depositar()
+        
             
     print('')
-    print(f'Aposta de R${valor_aposta} feita com sucesso!\n♠ Iniciando o Blackjack: ')
+    print(f'= Aposta de R${valor_aposta} feita com sucesso!\n== ♠ Iniciando o Blackjack ♠ ==')
     # time.sleep(2)
     
 def saldo():
@@ -146,7 +190,7 @@ def menu():
     saldo()
 
     print('=== Blackjack ♠ ===')
-    print(f'♠ Saldo: R${saldo} ♠')
+    print(f'♠ Saldo: R${saldo()} ♠')
     print('1. Apostar')
     print('2. Depositar')
     print('3. Sair')
@@ -172,11 +216,9 @@ def menu():
         
 cartas = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A']
 baralho_ordenado = [carta for carta in cartas for _ in range(4)]
-print(baralho_ordenado)
 
 baralho = baralho_ordenado.copy()
 embaralhar(baralho)
-print(baralho)
 
 verificar_arquivo()
 
