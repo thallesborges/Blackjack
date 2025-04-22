@@ -68,17 +68,16 @@ def jogar(valor_aposta):
     print(f'♠ Aposta: R${valor_aposta}')
     print(f'<LOG> DEALER -> {cartas_dealer} -> {sum(valor_cartas_dealer)} <LOG>')
     print(f'DEALER -> {cartas_dealer[0]}')
-    menu_aposta(cartas_jogador, valor_cartas_jogador)
 
     if cartas_dealer[0] == 'A' and (valor_aposta + (valor_aposta/2)) <= saldo():
         print('= O Dealer está com um às!')
-        seguro = input('♠ Deseja fazer seguro? (Y/N): ')
+        seguro = input('♠ Deseja fazer seguro? (Y/N): ').upper()
 
         while seguro not in ['Y', 'N']:
               try:
-                seguro = input('Por favor, escolha uma opção disponível (Y/N): ')
+                seguro = input('Por favor, escolha uma opção disponível (Y/N): ').upper()
               except ValueError:
-                seguro = input('Por favor, escolha uma opção válida (Y/N): ')
+                seguro = input('Por favor, escolha uma opção válida (Y/N): ').upper()
 
         if seguro == 'Y' and sum(valor_cartas_dealer) == 21:
             print('= 🏦 Dealer possui Blackjack, o seguro cobriu a aposta.')
@@ -93,15 +92,17 @@ def jogar(valor_aposta):
     elif cartas_dealer[0] == 'A' and (valor_aposta + (valor_aposta/2)) > saldo():
         print('= O Dealer está com um ÀS!')
         print('= Você não possui saldo suficiente para fazer seguro.')
+
+    menu_aposta(cartas_jogador, valor_cartas_jogador)
      
 def apostar_novamente():
     print('=== ♠ Rodada encerrada ♠ ===')
-    apostar_novamente = input('♠ Apostar novamente? (Y/N): ')
+    apostar_novamente = input('♠ Apostar novamente? (Y/N): ').upper()
     while apostar_novamente not in ['Y', 'N']:
         try:
-            apostar_novamente = input('= Por favor, escolha uma opção válida (Y/N): ')
+            apostar_novamente = input('= Por favor, escolha uma opção válida (Y/N): ').upper()
         except ValueError:
-            apostar_novamente = input('= Por favor, escolha uma opção válida (Y/N): ')
+            apostar_novamente = input('= Por favor, escolha uma opção válida (Y/N): ').upper()
     if apostar_novamente == 'Y':
         apostar()
     elif apostar_novamente == 'N':
@@ -185,17 +186,17 @@ def menu_aposta(cartas_jogador, valor_cartas_jogador):
     if sum(valor_cartas_jogador) < 21:
         if valor_cartas_jogador[0] == valor_cartas_jogador[1]:
             print('1. Dividir')
-            print('2. Parar')
-            print('3. Pedir')
+            print('2. Pedir')
+            print('3. Parar')
             print('4. Dobrar')
 
             opcao = int(input('♠ Opção: '))
             if opcao == 1:
                 print('Dividindo...')
             elif opcao == 2:
-                print('Parando...')
+                pedir_carta(cartas_jogador, valor_cartas_jogador)
             elif opcao == 3:
-                print('Pedindo...')
+                print('Parando...')
             else:
                 print('Dobrando...')
 
@@ -205,7 +206,7 @@ def menu_aposta(cartas_jogador, valor_cartas_jogador):
             print('3. Dobrar')
             opcao = int(input('♠ Opção: '))
             if opcao == 1:
-                print('Pedindo...')
+                pedir_carta(cartas_jogador, valor_cartas_jogador)
             elif opcao == 2:
                 print('Parando...')
             else:
@@ -219,6 +220,21 @@ def menu_aposta(cartas_jogador, valor_cartas_jogador):
         print('Estourou! 💣')
         # Remover valor da aposta do saldo
         apostar_novamente()
+
+def pedir_carta(cartas_jogador, valor_cartas_jogador):
+    carta = baralho.pop(0)
+    cartas_jogador.append(carta)
+    if carta in ['J', 'Q', 'K']:
+        valor_cartas_jogador.append(10)
+    elif carta == 'A' and sum(valor_cartas_jogador + 11) > 21:
+        valor_cartas_jogador.append(1)
+    elif carta == 'A' and sum(valor_cartas_jogador + 11) <= 21:
+        valor_cartas_jogador.append(11)
+    else:
+        valor_cartas_jogador.append(carta)
+
+    # Desenvolver um método para iterar sobre a lista de cartas
+    # FALHO: print(f'Suas cartas: {cartas_jogador[0]}, {cartas_jogador[1]} e {cartas_jogador[2]}')
 
 def saldo():
      with open('saldo.txt', 'r') as arq:
