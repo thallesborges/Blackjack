@@ -49,7 +49,9 @@ Nenhuma dependência externa é necessária.
    python main.py
    ```
 
-4. Siga os prompts na tela para navegar pelo menu, depositar fundos, apostar e jogar. Se divirta!
+4. Siga os prompts na tela para navegar pelo menu, depositar fundos, apostar e jogar. 
+
+5. Se divirta!
 
 ---
 
