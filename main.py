@@ -1,18 +1,7 @@
 import random, os, platform, time, sys
 
-def limpar_tela():
-     if platform.system() == 'Windows':
-          os.system('cls')
-     else:
-          os.system('clear')
-
-def embaralhar(baralho):
-    random.shuffle(baralho)
-
 def depositar():
     limpar_tela()
-    
-    saldo()
 
     while True:
         try:
@@ -23,7 +12,7 @@ def depositar():
                  print('= Por favor, insira um valor maior que zero.')
                  valor_deposito = float(input('♠ Valor a ser depositado: R$'))
 
-            saldo_antigo = float(saldo)
+            saldo_antigo = float(saldo())
             novo_saldo = saldo_antigo + valor_deposito
      
             with open('saldo.txt', 'w') as arq:
@@ -41,25 +30,8 @@ def depositar():
              print('= Por favor, insira um valor numérico.')
     
     menu()
-     
-def verificar_arquivo():
-    try:
-          with open('saldo.txt', 'x') as arq:
-               arq.write('0')
-               print('<LOG> Arquivo criado com sucesso <LOG>')
-    except FileExistsError:
-        print('<LOG> O arquivo já existe <LOG>')
-        if os.path.getsize('saldo.txt') == 0:
-            print('<LOG> O arquivo está vazio -> Escrevendo valor inicial <LOG>')
-            with open('saldo.txt', 'w') as arq:
-                arq.write('0')
-    
-    print('<LOG> Iniciando o Blackjack <LOG>')
-    time.sleep(1)
-    limpar_tela()
 
 def jogar(valor_aposta):
-
     limpar_tela()
     
     cartas_dealer = []
@@ -96,6 +68,7 @@ def jogar(valor_aposta):
     print(f'♠ Aposta: R${valor_aposta}')
     print(f'<LOG> DEALER -> {cartas_dealer} -> {sum(valor_cartas_dealer)} <LOG>')
     print(f'DEALER -> {cartas_dealer[0]}')
+    menu_aposta(cartas_jogador, valor_cartas_jogador)
 
     if cartas_dealer[0] == 'A' and (valor_aposta + (valor_aposta/2)) <= saldo():
         print('= O Dealer está com um às!')
@@ -120,13 +93,7 @@ def jogar(valor_aposta):
     elif cartas_dealer[0] == 'A' and (valor_aposta + (valor_aposta/2)) > saldo():
         print('= O Dealer está com um ÀS!')
         print('= Você não possui saldo suficiente para fazer seguro.')
-    
-    print(f'= Suas cartas: {cartas_jogador[0]} & {cartas_jogador[1]}')
-    if (valor_cartas_jogador[0] == valor_cartas_jogador[1]) and (valor_aposta*2 <= saldo()):
-        print('1. Dividir')
-        print('2. Pedir')
-        print('3. Parar')
-
+     
 def apostar_novamente():
     print('=== ♠ Rodada encerrada ♠ ===')
     apostar_novamente = input('♠ Apostar novamente? (Y/N): ')
@@ -135,14 +102,10 @@ def apostar_novamente():
             apostar_novamente = input('= Por favor, escolha uma opção válida (Y/N): ')
         except ValueError:
             apostar_novamente = input('= Por favor, escolha uma opção válida (Y/N): ')
-
     if apostar_novamente == 'Y':
         apostar()
     elif apostar_novamente == 'N':
         menu()
-
-def dividir_cartas():
-    print('Dividindo cartas...')
 
 def apostar():
     global valor_aposta
@@ -211,7 +174,52 @@ def apostar():
         
     print(f'= Aposta de R${valor_aposta} feita com sucesso!')
     time.sleep(2)
-    
+
+def menu_aposta(cartas_jogador, valor_cartas_jogador):
+
+    print(f'🃏 Suas cartas: {cartas_jogador[0]} & {cartas_jogador[1]}')
+
+    if cartas_jogador == ['A', 'A']:
+        valor_cartas_jogador = [11, 1]
+
+    if sum(valor_cartas_jogador) < 21:
+        if valor_cartas_jogador[0] == valor_cartas_jogador[1]:
+            print('1. Dividir')
+            print('2. Parar')
+            print('3. Pedir')
+            print('4. Dobrar')
+
+            opcao = int(input('♠ Opção: '))
+            if opcao == 1:
+                print('Dividindo...')
+            elif opcao == 2:
+                print('Parando...')
+            elif opcao == 3:
+                print('Pedindo...')
+            else:
+                print('Dobrando...')
+
+        else: # while
+            print('1. Pedir')
+            print('2. Parar')
+            print('3. Dobrar')
+            opcao = int(input('♠ Opção: '))
+            if opcao == 1:
+                print('Pedindo...')
+            elif opcao == 2:
+                print('Parando...')
+            else:
+                print('Dobrando...')
+
+    elif sum(cartas) == 21:
+        print('🤑 Blackjack!')
+        print(f'= Valor recebido: R${valor_aposta*2}')
+        apostar_novamente()
+    else: 
+        print('Estourou! 💣')
+        # Remover valor da aposta do saldo
+        apostar_novamente()
+
 def saldo():
      with open('saldo.txt', 'r') as arq:
         saldo = arq.read()
@@ -243,12 +251,37 @@ def menu():
         print('= Você optou por sair do ♠ Blackjack ♠\n= Volte sempre!')
         sys.exit(0)
     elif opcao == 2:
-        time.sleep(2)
+        time.sleep(1)
         depositar()
     else:
         apostar()
         jogar(valor_aposta)
-        
+
+def limpar_tela():
+     if platform.system() == 'Windows':
+          os.system('cls')
+     else:
+          os.system('clear')  
+
+def embaralhar(baralho):
+    random.shuffle(baralho)
+
+def verificar_arquivo():
+    try:
+          with open('saldo.txt', 'x') as arq:
+               arq.write('0')
+               print('<LOG> Arquivo criado com sucesso <LOG>')
+    except FileExistsError:
+        print('<LOG> O arquivo já existe <LOG>')
+        if os.path.getsize('saldo.txt') == 0:
+            print('<LOG> O arquivo está vazio -> Escrevendo valor inicial <LOG>')
+            with open('saldo.txt', 'w') as arq:
+                arq.write('0')
+    
+    print('<LOG> Iniciando o Blackjack <LOG>')
+    time.sleep(1)
+    limpar_tela()
+
 cartas = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A']
 baralho_ordenado = [carta for carta in cartas for _ in range(4)]
 

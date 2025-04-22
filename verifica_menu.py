@@ -1,5 +1,4 @@
 def menu_aposta():
-    # Menu 1:
     if sum(cartas) < 21:
         if cartas[0] == cartas[1]:
             print('1. Dividir')
@@ -30,8 +29,8 @@ def menu_aposta():
                 print('Dobrando...')
 
     elif sum(cartas) == 21:
-        print('Blackjack ♠')
-        print('Valor recebido: R$') # Soma do valor da aposta
+        print('🤑 Blackjack!')
+        print('= Valor recebido: R$') # Soma do valor da aposta
     
     else: 
         print('Estourou! 💣')
@@ -102,15 +101,8 @@ def dividir():
     else:
         print('= Segunda mão encerrada!')
     
-
-
 def verificar_dealer():
     print('Aqui será o processo pra avaliar as cartas do Dealer')
-
-    
-        
-
-
 
 cartas = []
 for i in range(2):
