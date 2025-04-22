@@ -6,7 +6,7 @@ Um jogo de Blackjack em Python que simula a experiência de um cassino, permitin
 
 ## 📖 Visão Geral
 
-O **Blackjack** é um jogo de cartas onde o jogador compete contra o dealer, tentando alcançar uma soma de cartas próxima de 21 sem ultrapassá-la. Este projeto implementa as regras padrão do jogo, com recursos como depósitos, apostas, divisão de cartas, seguro e Blackjack natural.
+O **Blackjack** é um jogo de cartas onde o jogador compete contra o dealer (crupiê), tentando alcançar uma soma de cartas próxima de 21 sem ultrapassá-la. Este projeto implementa as regras padrão do jogo, com recursos como depósitos, apostas, divisão de cartas, seguro e muito mais!
 
 ---
 
@@ -14,7 +14,7 @@ O **Blackjack** é um jogo de cartas onde o jogador compete contra o dealer, ten
 
 - **Gerenciamento de Saldo**: Saldo armazenado em `saldo.txt`, com opção de depósito.
 - **Sistema de Apostas**: Validação para apostas positivas e saldo suficiente.
-- **Mecânicas do Jogo**: Suporta ações como pedir carta, parar, dobrar e dividir (parcialmente implementado).
+- **Mecânicas do Jogo**: Suporta ações como pedir carta, parar, dobrar e dividir.
 - **Manuseio de Cartas**: Baralho embaralhado com valuation correta para ases e cartas de face.
 - **Interface de Usuário**: Interface textual clara com prompts e atualizações do estado do jogo.
 - **Compatibilidade**: Funciona em Windows e sistemas Unix (limpeza de tela adaptada).
@@ -49,7 +49,7 @@ Nenhuma dependência externa é necessária.
    python main.py
    ```
 
-4. Siga os prompts na tela para navegar pelo menu, depositar fundos, apostar e jogar.
+4. Siga os prompts na tela para navegar pelo menu, depositar fundos, apostar e jogar. Se divirta!
 
 ---
 
@@ -65,11 +65,10 @@ Nenhuma dependência externa é necessária.
    - Receba duas cartas e veja a carta aberta do dealer.
    - Escolha entre pedir carta, parar, dobrar ou dividir (se aplicável).
    - O dealer compra cartas até atingir pelo menos 17.
-   - O resultado (vitória, derrota, Blackjack) é determinado pelas regras padrão.
+   - O resultado (vitória, derrota, Blackjack) é determinado pelas regras padrão do jogo.
 5. **Casos Especiais**:
    - **Blackjack Natural**: 21 com duas cartas (ás + carta de valor 10) paga 1.5x a aposta.
    - **Seguro**: Oferecido se a carta aberta do dealer for um ás, cobrindo perdas em caso de Blackjack do dealer.
-   - **Divisão/Dobrar**: Disponível em condições específicas (divisão para pares, dobrar para mãos iniciais).
 
 ---
 
@@ -91,8 +90,8 @@ Nenhuma dependência externa é necessária.
 
 ## ℹ️ Notas
 
-- As funções `dividir()` e `dobrar_cartas()` estão referenciadas, mas não implementadas no código fornecido.
-- O jogo usa um único baralho, embaralhado no início de cada sessão.
+- As funções `dividir()` e `dobrar_cartas()` estão referenciadas, mas ainda não foram implementadas no código fornecido.
+- O jogo (por enquanto) usa apenas um único baralho, embaralhado no início de cada sessão.
 - Ases valem 11 por padrão, mas mudam para 1 se a mão ultrapassar 21.
 - Inclui tratamento básico de erros para entradas inválidas (ex.: valores não numéricos).
 
@@ -100,11 +99,10 @@ Nenhuma dependência externa é necessária.
 
 ## ⚠️ Limitações
 
-- As funcionalidades de divisão e dobrar estão incompletas.
+- As funcionalidades de divisão e dobrar (ainda) estão incompletas.
 - Interface exclusivamente textual, sem elementos gráficos.
-- O baralho não é reembaralhado durante a sessão, o que pode afetar rodadas longas.
+- O baralho (ainda) não é reembaralhado durante a sessão, o que pode afetar rodadas longas.
 - Suporte apenas para um jogador contra o dealer.
-- Sem validação avançada para casos extremos (ex.: arquivo `saldo.txt` corrompido).
 
 ---
 
@@ -124,4 +122,4 @@ Este projeto é fornecido sem licença, para fins educacionais.
 
 ---
 
-Desenvolvido com 💻 e ♠
+Desenvolvido por Thalles Borges.
