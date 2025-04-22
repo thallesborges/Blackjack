@@ -1,4 +1,4 @@
-import random, os, platform, time
+import random, os, platform, time, sys
 
 def limpar_tela():
      if platform.system() == 'Windows':
@@ -113,13 +113,13 @@ def jogar(valor_aposta):
                 
         elif seguro == 'Y' and sum(valor_cartas_dealer) != 21:
             print('= Você perdeu o seguro, Dealer não possui Blackjack.')
-            novo_saldo = saldo - (valor_aposta / 2)
+            novo_saldo = saldo() - (valor_aposta/2)
             with open('saldo.txt', 'w') as arq:
                 arq.write(str(novo_saldo))
 
     elif cartas_dealer[0] == 'A' and (valor_aposta + (valor_aposta/2)) > saldo():
-        print('O Dealer está com um ÀS!')
-        print('Você não possui saldo suficiente para fazer seguro.')
+        print('= O Dealer está com um ÀS!')
+        print('= Você não possui saldo suficiente para fazer seguro.')
     
     print(f'= Suas cartas: {cartas_jogador[0]} & {cartas_jogador[1]}')
     if (valor_cartas_jogador[0] == valor_cartas_jogador[1]) and (valor_aposta*2 <= saldo()):
@@ -149,14 +149,26 @@ def apostar():
 
     saldo()
 
-
     if saldo() == 0:
-        # limpar_tela()
-        print('= Seu saldo está zerado. Para apostar é necessário possuir saldo.')
-        print('= Estamos te levando à tela de depósito.')
-        time.sleep(2.5)
         limpar_tela()
-        depositar()
+        print('⚠ Seu saldo está zerado ⚠\n= Para apostar é necessário possuir saldo: ')
+        print('1. Depositar')
+        print('2. Sair')
+        opcao = int(input('♠ Opção: '))
+
+        while opcao not in [1, 2]:
+            try:
+                opcao = input('= Por favor, escolha uma opção válida (1/2): ')
+            except ValueError:
+                opcao = input('= Por favor, escolha uma opção válida (1/2): ')
+        if opcao == 1:
+            time.sleep(1)
+            depositar()
+        else:
+            time.sleep(1)
+            limpar_tela()
+            print('= Você optou por sair do ♠ Blackjack ♠\n= Volte sempre!')
+            sys.exit(0)
 
     while True:
         try:
@@ -206,7 +218,7 @@ def saldo():
         return float(saldo)
 
 def menu():
-    # limpar_tela()
+    limpar_tela()
 
     saldo()
 
@@ -229,6 +241,7 @@ def menu():
     if opcao == 3:
         limpar_tela()
         print('= Você optou por sair do ♠ Blackjack ♠\n= Volte sempre!')
+        sys.exit(0)
     elif opcao == 2:
         time.sleep(2)
         depositar()
