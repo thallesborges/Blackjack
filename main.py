@@ -12,12 +12,11 @@ def embaralhar(baralho):
 def depositar():
     limpar_tela()
     
-    with open('saldo.txt', 'r') as arq:
-        saldo = arq.read()
+    saldo()
 
     while True:
         try:
-            print(f'=== ♠ Saldo atual: R${saldo} ===')
+            print(f'=== ♠ Saldo atual: R${saldo()} ===')
             valor_deposito = float(input('♠ Valor a ser depositado: R$'))
 
             while valor_deposito <= 0:
@@ -30,15 +29,16 @@ def depositar():
             with open('saldo.txt', 'w') as arq:
                 arq.write(str(novo_saldo))
 
+            time.sleep(1)
             limpar_tela()
-            print('♠ Depósito concluído com sucesso!')
-            print(f'=== ♠ Novo saldo: R${novo_saldo}')
+            print('= Depósito concluído com sucesso!')
+            print(f'= Novo saldo: R${novo_saldo}')
             time.sleep(2.5)
             limpar_tela()
             break
 
         except ValueError:
-             print('= Por favor, insira um valor válido.')
+             print('= Por favor, insira um valor numérico.')
     
     menu()
      
@@ -59,13 +59,15 @@ def verificar_arquivo():
     limpar_tela()
 
 def jogar(valor_aposta):
+
+    limpar_tela()
+    
     cartas_dealer = []
     cartas_jogador = []
     valor_cartas_dealer = []
     valor_cartas_jogador = []
 
-    limpar_tela()
-    print('== ♠ Iniciando o Blackjack ♠ ==')
+    print('= ♠ Iniciando o Blackjack ♠ =')
     
     for i in range(4):
         carta = baralho.pop(0)
@@ -96,7 +98,7 @@ def jogar(valor_aposta):
     print(f'DEALER -> {cartas_dealer[0]}')
 
     if cartas_dealer[0] == 'A' and (valor_aposta + (valor_aposta/2)) <= saldo():
-        print('= O Dealer está com um ÀS!')
+        print('= O Dealer está com um às!')
         seguro = input('♠ Deseja fazer seguro? (Y/N): ')
 
         while seguro not in ['Y', 'N']:
@@ -106,18 +108,8 @@ def jogar(valor_aposta):
                 seguro = input('Por favor, escolha uma opção válida (Y/N): ')
 
         if seguro == 'Y' and sum(valor_cartas_dealer) == 21:
-            print('Dealer possui 21 -> Seguro cobriu a aposta.')
-            print('=== ♠ Rodada encerrada ♠ ===')
-            apostar_novamente = input('♠ Apostar novamente? (Y/N): ')
-            while apostar_novamente not in ['Y', 'N']:
-                try:
-                    apostar_novamente = input('= Por favor, escolha uma opção válida (Y/N): ')
-                except ValueError:
-                    apostar_novamente = input('= Por favor, escolha uma opção válida (Y/N): ')
-            if apostar_novamente == 'Y':
-                apostar()
-            elif apostar_novamente == 'N':
-                menu()
+            print('= 🏦 Dealer possui Blackjack, o seguro cobriu a aposta.')
+            apostar_novamente()
                 
         elif seguro == 'Y' and sum(valor_cartas_dealer) != 21:
             print('= Você perdeu o seguro, Dealer não possui Blackjack.')
@@ -134,6 +126,20 @@ def jogar(valor_aposta):
         print('1. Dividir')
         print('2. Pedir')
         print('3. Parar')
+
+def apostar_novamente():
+    print('=== ♠ Rodada encerrada ♠ ===')
+    apostar_novamente = input('♠ Apostar novamente? (Y/N): ')
+    while apostar_novamente not in ['Y', 'N']:
+        try:
+            apostar_novamente = input('= Por favor, escolha uma opção válida (Y/N): ')
+        except ValueError:
+            apostar_novamente = input('= Por favor, escolha uma opção válida (Y/N): ')
+
+    if apostar_novamente == 'Y':
+        apostar()
+    elif apostar_novamente == 'N':
+        menu()
 
 def dividir_cartas():
     print('Dividindo cartas...')
