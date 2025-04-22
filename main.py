@@ -1,7 +1,7 @@
 import random, os, platform, time, sys
 
 def depositar():
-    limpar_tela()
+    # limpar_tela()
 
     while True:
         try:
@@ -19,11 +19,11 @@ def depositar():
                 arq.write(str(novo_saldo))
 
             time.sleep(1)
-            limpar_tela()
+            # limpar_tela()
             print('= Depósito concluído com sucesso!')
             print(f'= Novo saldo: R${novo_saldo}')
             time.sleep(2.5)
-            limpar_tela()
+            # limpar_tela()
             break
 
         except ValueError:
@@ -32,7 +32,7 @@ def depositar():
     menu()
 
 def jogar(valor_aposta):
-    limpar_tela()
+    # limpar_tela()
     
     cartas_dealer = []
     cartas_jogador = []
@@ -64,10 +64,13 @@ def jogar(valor_aposta):
 
     if cartas_dealer == ['A', 'A']:
         valor_cartas_dealer = [11, 1]
+    
+    if cartas_jogador == ['A', 'A']:
+        valor_cartas_jogador = [11, 1]
 
     print(f'♠ Aposta: R${valor_aposta}')
     print(f'<LOG> DEALER -> {cartas_dealer} -> {sum(valor_cartas_dealer)} <LOG>')
-    print(f'DEALER -> {cartas_dealer[0]}')
+    print(f'== Dealer -> Carta aberta: {cartas_dealer[0]}')
 
     if cartas_dealer[0] == 'A' and (valor_aposta + (valor_aposta/2)) <= saldo():
         print('= O Dealer está com um às!')
@@ -114,7 +117,7 @@ def apostar():
     saldo()
 
     if saldo() == 0:
-        limpar_tela()
+        # limpar_tela()
         print('⚠ Seu saldo está zerado ⚠\n= Para apostar é necessário possuir saldo: ')
         print('1. Depositar')
         print('2. Sair')
@@ -130,7 +133,7 @@ def apostar():
             depositar()
         else:
             time.sleep(1)
-            limpar_tela()
+            # limpar_tela()
             print('= Você optou por sair do ♠ Blackjack ♠\n= Volte sempre!')
             sys.exit(0)
 
@@ -177,49 +180,63 @@ def apostar():
     time.sleep(2)
 
 def menu_aposta(cartas_jogador, valor_cartas_jogador):
+    print(f'♠ Suas cartas: {', '.join(str(carta) for carta in cartas_jogador)} -> {sum(valor_cartas_jogador)}')
 
-    print(f'🃏 Suas cartas: {cartas_jogador[0]} & {cartas_jogador[1]}')
-
-    if cartas_jogador == ['A', 'A']:
-        valor_cartas_jogador = [11, 1]
-
-    if sum(valor_cartas_jogador) < 21:
-        if valor_cartas_jogador[0] == valor_cartas_jogador[1]:
-            print('1. Dividir')
-            print('2. Pedir')
-            print('3. Parar')
-            print('4. Dobrar')
-
-            opcao = int(input('♠ Opção: '))
-            if opcao == 1:
-                print('Dividindo...')
-            elif opcao == 2:
-                pedir_carta(cartas_jogador, valor_cartas_jogador)
-            elif opcao == 3:
-                print('Parando...')
-            else:
-                print('Dobrando...')
-
-        else: # while
-            print('1. Pedir')
-            print('2. Parar')
-            print('3. Dobrar')
-            opcao = int(input('♠ Opção: '))
-            if opcao == 1:
-                pedir_carta(cartas_jogador, valor_cartas_jogador)
-            elif opcao == 2:
-                print('Parando...')
-            else:
-                print('Dobrando...')
-
-    elif sum(cartas) == 21:
+    if sum(valor_cartas_jogador) == 21:
         print('🤑 Blackjack!')
-        print(f'= Valor recebido: R${valor_aposta*2}')
+        print(f'= Valor ganho: R${valor_aposta*1.5}')
+
+        novo_saldo = saldo() + valor_aposta*1.5
+        with open('saldo.txt', 'w') as arq:
+            arq.write(str(novo_saldo))
+
         apostar_novamente()
-    else: 
-        print('Estourou! 💣')
-        # Remover valor da aposta do saldo
+
+    elif sum(valor_cartas_jogador) > 21: 
+        print('💣 Estourou!')
+        print(f'= Valor perdido: R${valor_aposta}')
+
+        novo_saldo = saldo() - valor_aposta
+        with open('saldo.txt', 'w') as arq:
+            arq.write(str(novo_saldo))
+
         apostar_novamente()
+
+    else:
+        while sum(valor_cartas_jogador) < 21:
+            if valor_cartas_jogador[0] == valor_cartas_jogador[1]:
+                print('1. Dividir')
+                print('2. Pedir')
+                print('3. Parar')
+                print('4. Dobrar')
+
+                opcao = int(input('♠ Opção: '))
+                if opcao == 1:
+                    # Dividir
+                    print('Dividindo...')
+                elif opcao == 2:
+                    # pedir_carta
+                    pedir_carta(cartas_jogador, valor_cartas_jogador)
+                elif opcao == 3:
+                    # Parar
+                    print('Parando...')
+                else:
+                    # Dobrar
+                    print('Dobrando...')
+
+            else:
+                print('1. Pedir')
+                print('2. Parar')
+                print('3. Dobrar')
+                opcao = int(input('♠ Opção: '))
+                if opcao == 1:
+                    pedir_carta(cartas_jogador, valor_cartas_jogador)
+                    print(f'Uma carta foi adicionada à sua mão: {cartas_jogador[-1]}')
+                    menu_aposta(cartas_jogador, valor_cartas_jogador)
+                elif opcao == 2:
+                    print('Parando...')
+                else:
+                    print('Dobrando...')
 
 def pedir_carta(cartas_jogador, valor_cartas_jogador):
     carta = baralho.pop(0)
@@ -233,16 +250,15 @@ def pedir_carta(cartas_jogador, valor_cartas_jogador):
     else:
         valor_cartas_jogador.append(carta)
 
-    # Desenvolver um método para iterar sobre a lista de cartas
-    # FALHO: print(f'Suas cartas: {cartas_jogador[0]}, {cartas_jogador[1]} e {cartas_jogador[2]}')
-
+    return valor_cartas_jogador, cartas_jogador
+      
 def saldo():
      with open('saldo.txt', 'r') as arq:
-        saldo = arq.read()
-        return float(saldo)
+        valor_saldo = arq.read()
+        return float(valor_saldo)
 
 def menu():
-    limpar_tela()
+    # limpar_tela()
 
     saldo()
 
@@ -263,7 +279,7 @@ def menu():
             print('Opção inválida. Por favor, escolha 1, 2 ou 3.')
 
     if opcao == 3:
-        limpar_tela()
+        # limpar_tela()
         print('= Você optou por sair do ♠ Blackjack ♠\n= Volte sempre!')
         sys.exit(0)
     elif opcao == 2:
@@ -296,7 +312,7 @@ def verificar_arquivo():
     
     print('<LOG> Iniciando o Blackjack <LOG>')
     time.sleep(1)
-    limpar_tela()
+    # limpar_tela()
 
 cartas = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A']
 baralho_ordenado = [carta for carta in cartas for _ in range(4)]
