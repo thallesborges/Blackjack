@@ -20,8 +20,7 @@ def menu():
     print(f'= Saldo: R${saldo():.2f}')
     print('1. Apostar')
     print('2. Depositar')
-    print('3. Configurações')
-    print('4. Sair')
+    print('3. Sair')
 
     while True:
         try: 
@@ -149,24 +148,23 @@ def apostar():
                     
         if opcao == 1:
             apostar()
-            '''valor_aposta = float(input('♠ Novo valor da aposta: R$'))
-            while valor_aposta > saldo():
-                print('= Você não possui saldo suficiente para esta aposta.')
-                print(f'= Saldo atual: R${saldo()}')
-                valor_aposta = float(input(' ♠ Novo valor da aposta: R$'))'''
         else:
             depositar()
 
 def jogar(valor_aposta):
     time.sleep(2)
     limpar_tela()
+
+    if len(baralho) == len(baralho)/2:
+        embaralhar(baralho_ordenado)
+        print('=== ♠ Reembaralhando ♠ ===')
     
     cartas_dealer = []
     cartas_jogador = []
     valor_cartas_dealer = []
     valor_cartas_jogador = []
 
-    print('=== ♠ Entregando as Cartas ♠ ===')
+    print('=== ♠ Entregando Cartas ♠ ===')
     
     for i in range(4):
         carta = baralho.pop(0)
@@ -230,7 +228,6 @@ def apostar_novamente():
     print(f'= Saldo atual: R${saldo():.2f}')
     if saldo() == 0:
         print('= Seu saldo zerou. Por favor, deposite mais crédito na página de depósito.')
-        time.sleep(3)
         menu()
 
     apostar_novamente = input('♠ Apostar novamente? (Y/N): ').upper()
@@ -252,7 +249,7 @@ def menu_aposta(cartas_jogador, valor_cartas_jogador, cartas_dealer, valor_carta
     if len(cartas_jogador) == 2 and sum(valor_cartas_jogador) == 21:
         if sum(valor_cartas_dealer) >= 17 and sum(valor_cartas_dealer) < 21:
             print('🤑 Blackjack 🤑')
-            print(f'= Valor ganho: R${valor_aposta*1.5}')
+            print(f'= Valor ganho: R${(valor_aposta*1.5):.2f}')
 
             novo_saldo = saldo() + valor_aposta*1.5
             with open('saldo.txt', 'w') as arq:
@@ -265,7 +262,7 @@ def menu_aposta(cartas_jogador, valor_cartas_jogador, cartas_dealer, valor_carta
         
     elif len(cartas_jogador) > 2 and sum(valor_cartas_jogador) == 21:
         print('💲 Blackjack 💲')
-        print(f'= Valor ganho: R${valor_aposta}')
+        print(f'= Valor ganho: R${valor_aposta:.2f}')
 
         novo_saldo = saldo() + valor_aposta
         with open('saldo.txt', 'w') as arq:
@@ -434,7 +431,7 @@ def parar_rodada(cartas_dealer, valor_cartas_dealer, cartas_jogador, valor_carta
             time.sleep(1)
             print('=== ♠ Resultado ♠ ===')
             print(f'💲 VOCÊ GANHOU por {sum(valor_cartas_jogador) - sum(valor_cartas_dealer)} ponto(s) de diferença 💲')
-            print(f'= Saldo ganho: R${valor_aposta} ✅')
+            print(f'= Valor ganho: R${valor_aposta} ✅')
 
             novo_saldo = saldo() + valor_aposta
             with open('saldo.txt', 'w') as arq:
@@ -447,7 +444,7 @@ def parar_rodada(cartas_dealer, valor_cartas_dealer, cartas_jogador, valor_carta
             print(f'♠ Suas cartas: {', '.join(str(carta) for carta in cartas_jogador)} -> {sum(valor_cartas_jogador)}')
             time.sleep(1)
             print('🚧 DEALER EMPATOU 🚧')
-            print('== ♠ Aposta Devolvida ♠ ==')
+            print('= Valor da aposta devolvido.')
             time.sleep(2)
             apostar_novamente()
 
@@ -474,7 +471,6 @@ baralho_ordenado = [carta for carta in cartas for _ in range(4)]
 
 baralho = baralho_ordenado.copy()
 embaralhar(baralho)
-
 
 verificar_arquivo()
 menu()
