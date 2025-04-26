@@ -63,24 +63,24 @@ def depositar():
     limpar_tela()
 
     print(f'=== ♠ Saldo atual: R${saldo():.2f} ♠ ===')
+
     while True:
         try:
             valor_deposito = float(input('♠ Valor a ser depositado: R$'))
             while valor_deposito <= 0:
-                 print('= Opção inválida! Por favor, insira um valor maior que zero.')
+                 print('# Opção inválida! Por favor, insira um valor maior que zero.')
                  valor_deposito = float(input('♠ Valor a ser depositado: R$'))
-
-            novo_saldo = saldo() + valor_deposito
-            with open('saldo.txt', 'w') as arq:
-                arq.write(str(novo_saldo))
-
-            time.sleep(0.5)
-            print('= Depósito concluído com sucesso!')
-            print(f'= Novo saldo: R${saldo():.2f}')
             break
-
         except ValueError:
              print('## Opção inválida! Por favor, insira um valor numérico.')
+
+    novo_saldo = saldo() + valor_deposito
+    with open('saldo.txt', 'w') as arq:
+        arq.write(str(novo_saldo))
+
+    time.sleep(0.5)
+    print('= Depósito concluído com sucesso!')
+    print(f'= Novo saldo: R${saldo():.2f}')
 
     time.sleep(1)
     menu()
@@ -102,18 +102,14 @@ def apostar():
     while True:
         try:
             valor_aposta = float(input('♠ Aposta: R$').replace(',', '.'))
+            while valor_aposta <= 0:
+                 print('# Opção inválida! Por favor, insira um número maior que zero.')
+                 valor_aposta = float(input('♠ Aposta: R$').replace(',', '.'))     
             break
         except ValueError:
-            print('## Opção inválida! Por favor, insira um número válido.')
-
-    while valor_aposta <= 0:
-        try:
-            print('## Opção inválida! Por favor, aposte um valor maior que zero.')
-            valor_aposta = float(input('♠ Aposta: R$').replace(',', '.'))
-        except ValueError:
-            print('## Opção inválida! Por favor, insira um número válido maior que zero.')
+            print('# Opção inválida! Por favor, insira um número válido.')
             
-    while valor_aposta > saldo():
+    if valor_aposta > saldo():
         time.sleep(1)
         print('= Você não possui saldo suficiente para esta aposta.')
         print('1. Mudar aposta')
@@ -123,22 +119,21 @@ def apostar():
             try:
                 opcao = int(input('♠ Opção: '))
                 while opcao not in [1, 2]:
-                    print('## Opção inválida! Por favor, insira 1 ou 2. ')
+                    print('# Opção inválida! Por favor, insira 1 ou 2. ')
                     opcao = int(input('♠ Opção: '))
                 break
             except ValueError:
-                print('## Opção inválida! Por favor, insira 1 ou 2.')
+                print('# Opção inválida! Por favor, insira 1 ou 2.')
 
         if opcao == 1:
             apostar()
         else:
             depositar()
+    else:
+        novo_saldo = saldo() - valor_aposta
+        with open('saldo.txt', 'w') as arq:
+            arq.write(str(novo_saldo))
     
-    novo_saldo = saldo() - valor_aposta
-    with open('saldo.txt', 'w') as arq:
-        arq.write(str(novo_saldo))
-    
-
 def jogar(valor_aposta):
     time.sleep(2)
     limpar_tela()
@@ -180,7 +175,7 @@ def jogar(valor_aposta):
 
     if cartas_dealer[0] == 'A' and (valor_aposta/2) <= saldo():
         print('= O Dealer está com um ás!')
-        print('🔒 Deseja fazer seguro?')
+        print('♦ Deseja fazer seguro?')
         print('1. Sim')
         print('2. Não')
         
@@ -188,21 +183,28 @@ def jogar(valor_aposta):
             try:
                 opcao = int(input('♠ Opção: '))
                 while opcao not in [1, 2]:
-                    print('## Opção inválida! Por favor, insira 1 ou 2.')
+                    print('# Opção inválida! Por favor, insira 1 ou 2.')
                 break
             except ValueError:
-                print('## Opção inválida! Por favor, insira 1 ou 2.')
+                print('# Opção inválida! Por favor, insira 1 ou 2.')
 
         if opcao == 1 and sum(valor_cartas_dealer) == 21:
-            print('= 💰 Dealer possui Blackjack, o seguro cobriu a aposta.')
+            print('= ♦ Dealer possui Blackjack, o seguro cobriu a aposta.')
             apostar_novamente()
         
-        if opcao == 1 and sum(valor_cartas_dealer) < 21:
-            print('= Dealer não possui Blackjack.')
+        elif opcao == 1 and sum(valor_cartas_dealer) < 21:
+            print('♦ Dealer não possui Blackjack.')
+            print(f'= Dinheiro gasto no seguro: {valor_aposta/2}')
 
             novo_saldo = saldo() - (valor_aposta/2)
             with open('saldo.txt', 'w') as arq:
                 arq.write(str(novo_saldo))
+        
+        elif opcao == 2 and sum(valor_cartas_dealer) == 21:
+            parar_rodada(cartas_dealer, valor_cartas_dealer, cartas_jogador, valor_cartas_jogador)
+        
+        else:
+            print('Erro desconhecido, linha 207.')
             
     elif cartas_dealer[0] == 'A' and (valor_aposta/2) > saldo():
         print('= O Dealer está com um ás!')
@@ -215,8 +217,8 @@ def apostar_novamente():
     print('=== ♠ Rodada Encerrada ♠ ===')
     print(f'= Saldo atual: R${saldo():.2f}')
     if saldo() == 0:
-        print('= Seu saldo está zerado. Por favor, deposite mais crédito na página de depósito.')
-        time.sleep(2)
+        print('= Seu saldo zerou. Por favor, deposite mais crédito na página de depósito.')
+        time.sleep(4)
         menu()
 
     print('= Apostar novamente?')
@@ -227,10 +229,10 @@ def apostar_novamente():
         try:
             opcao = int(input('♠ Opção: '))
             while opcao not in [1, 2]:
-                print('## Opção inválida! Por favor, insira 1 ou 2.')
+                print('# Opção inválida! Por favor, insira 1 ou 2.')
             break
         except ValueError:
-            print('## Opção inválida! Por favor, insira 1 ou 2.')
+            print('# Opção inválida! Por favor, insira 1 ou 2.')
 
     if opcao  == 1:
         apostar()
@@ -245,7 +247,7 @@ def menu_aposta(cartas_jogador, valor_cartas_jogador, cartas_dealer, valor_carta
     if len(cartas_jogador) == 2 and sum(valor_cartas_jogador) == 21:
         if sum(valor_cartas_dealer) >= 17 and sum(valor_cartas_dealer) < 21:
             print(f'= Cartas do Dealer: {', '.join(str(carta) for carta in cartas_dealer)} -> {sum(valor_cartas_dealer)}')
-            print('🤑 BLACKJACK 🤑')
+            print('♥.♥ BLACKJACK ♥.♥')
             print(f'= Dinheiro ganho: R${(valor_aposta*1.5):.2f}')
 
             novo_saldo = saldo() + valor_aposta*2.5
@@ -255,12 +257,12 @@ def menu_aposta(cartas_jogador, valor_cartas_jogador, cartas_dealer, valor_carta
             apostar_novamente()
 
         else:
-            print('💲 VOCÊ POSSUI BLACKJACK 💲')
+            print('♥ VOCÊ POSSUI BLACKJACK ♥')
             print('== ♠ Verificando cartas do Dealer ♠ ==')
             parar_rodada(cartas_dealer, valor_cartas_dealer, cartas_jogador, valor_cartas_jogador)
         
     elif len(cartas_jogador) > 2 and sum(valor_cartas_jogador) == 21:
-        print('💲 BLACKJACK 💲')
+        print('♥ BLACKJACK ♥')
         print(f'= Dinheiro ganho: R${valor_aposta:.2f}')
 
         novo_saldo = saldo() + valor_aposta*2
@@ -270,8 +272,10 @@ def menu_aposta(cartas_jogador, valor_cartas_jogador, cartas_dealer, valor_carta
         apostar_novamente()        
         
     elif sum(valor_cartas_jogador) > 21: 
-        print('💥 VOCÊ ESTOUROU 💥')
-        print(f'= Dinheiro perdido: R${valor_aposta}')
+
+        print(f'= Cartas do Dealer: {', '.join(str(carta) for carta in cartas_dealer)} -> {sum(valor_cartas_dealer)}')
+        print('♣ VOCÊ ESTOUROU ♣')
+        print(f'= Dinheiro perdido: R${valor_aposta:.2f}')
 
         apostar_novamente()
 
@@ -301,8 +305,7 @@ def menu_aposta(cartas_jogador, valor_cartas_jogador, cartas_dealer, valor_carta
                     if len(cartas_dealer) == 2:
                         print(f'= DEALER -> Carta aberta: {cartas_dealer[0]}')
                     if len(cartas_dealer) > 2:
-                        print(f'= Cartas do Dealer: {', '.join(str(carta) for carta in cartas_dealer)} -> {sum(valor_cartas_dealer)}')
-                    print(f'== Uma carta foi adicionada à sua mão: {cartas_jogador[-1]}')
+                        print(f'== Uma carta foi adicionada à sua mão: {cartas_jogador[-1]}')
                     
                     menu_aposta(cartas_jogador, valor_cartas_jogador, cartas_dealer, valor_cartas_dealer)
                 elif opcao == 2:
@@ -395,30 +398,30 @@ def parar_rodada(cartas_dealer, valor_cartas_dealer, cartas_jogador, valor_carta
     
     print(f'= Cartas do Dealer: {', '.join(str(carta) for carta in cartas_dealer)} -> {sum(valor_cartas_dealer)}')
 
-    if sum(valor_cartas_dealer) == 21:
-        print('🥊 DEALER POSSUI BLACKJACK 🥊')
-
     while sum(valor_cartas_dealer) < 17:
         carta = baralho.pop(0)
         cartas_dealer.append(carta)
 
         if carta in ['J', 'Q', 'K']:
             valor_cartas_dealer.append(10)
-        elif carta == 'A' and sum(valor_cartas_dealer) >= 11:
-            valor_cartas_dealer.append(1)
-        elif carta == 'A' and sum(valor_cartas_dealer) <= 10:
+        elif carta == 'A':
             valor_cartas_dealer.append(11)
         else:
             valor_cartas_dealer.append(carta)
 
-        if sum(valor_cartas_dealer) > 21 and 'A' in valor_cartas_dealer == True:
-            sum(valor_cartas_dealer) == sum(valor_cartas_dealer) - 10
+        if 'A' in cartas_dealer and sum(valor_cartas_dealer) > 21:
+            for i in range(len(cartas_dealer)):
+                if valor_cartas_dealer[i] == 11:
+                    valor_cartas_dealer[i] = 1
 
         time.sleep(1)
         print(f'= Cartas do Dealer: {', '.join(str(carta) for carta in cartas_dealer)} -> {sum(valor_cartas_dealer)}')
         
+    if sum(valor_cartas_dealer) == 21:
+        print('🥊 DEALER POSSUI BLACKJACK 🥊')
+
     if sum(valor_cartas_dealer) >= 17 and sum(valor_cartas_dealer) <= 21:
-        if sum(valor_cartas_dealer) > sum(valor_cartas_jogador) or sum(valor_cartas_dealer) == 21:
+        if sum(valor_cartas_dealer) > sum(valor_cartas_jogador):
 
             print(f'♠ Suas cartas: {', '.join(str(carta) for carta in cartas_jogador)} -> {sum(valor_cartas_jogador)}')
             time.sleep(1)
@@ -447,13 +450,18 @@ def parar_rodada(cartas_dealer, valor_cartas_dealer, cartas_jogador, valor_carta
             print(f'♠ Suas cartas: {', '.join(str(carta) for carta in cartas_jogador)} -> {sum(valor_cartas_jogador)}')
             time.sleep(1)
             print('🚧 DEALER EMPATOU 🚧')
+
+            novo_saldo = saldo() + valor_aposta
+            with open('saldo.txt', 'w') as arq:
+                arq.write(str(novo_saldo))
+
             print('= Valor da aposta devolvido.')
             time.sleep(2)
             apostar_novamente()
 
     else:
-        print('💥 DEALER ESTOUROU 💥')
-        print(f'= Dinheiro ganho: R${(valor_aposta):.2f} ✅')
+        print('♣ DEALER ESTOUROU ♣')
+        print(f'= Dinheiro ganho: R${(valor_aposta):.2f} ♥')
 
         novo_saldo = saldo() + valor_aposta*2
         with open('saldo.txt', 'w') as arq:
